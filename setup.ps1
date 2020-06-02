@@ -90,6 +90,31 @@ Install-ChocolateyPackage -Name soucetree
 
 Write-Host
 Write-Host "==> Configure programs..."
+
+Write-Host "===> Add VS Code context menu options"
+New-PSDrive -PSProvider registry -Root HKEY_CLASSES_ROOT -Name HKCR
+Write-Host "- Add to file sub-menu"
+$registryPath = "HKCR:\*\shell\VSCode"
+if (!(Test-Path -LiteralPath $registryPath)) {
+    New-Item -Path $registryPath -ItemType ExpandString -Value "Open w&ith Code"
+    New-ItemProperty -LiteralPath $registryPath -Name Icon -PropertyType ExpandString -Value "C:\Program Files\Microsoft VS Code\Code.exe"
+    New-Item -Path "$registryPath\command" -ItemType ExpandString -Value '"C:\Program Files\Microsoft VS Code\Code.exe" "%1"'
+}
+Write-Host "- Add to folder sub-menu"
+$registryPath = "HKCR:\Directory\shell\VSCode"
+if (!(Test-Path -LiteralPath $registryPath)) {
+    New-Item -Path $registryPath -ItemType ExpandString -Value "Open w&ith Code"
+    New-ItemProperty -LiteralPath $registryPath -Name Icon -PropertyType ExpandString -Value "C:\Program Files\Microsoft VS Code\Code.exe"
+    New-Item -Path "$registryPath\command" -ItemType ExpandString -Value '"C:\Program Files\Microsoft VS Code\Code.exe" "%V"'
+}
+Write-Host "- Add to folder background sub-menu"
+$registryPath = "HKCR:\Directory\Background\shell\VSCode"
+if (!(Test-Path -LiteralPath $registryPath)) {
+    New-Item -Path $registryPath -ItemType ExpandString -Value "Open w&ith Code"
+    New-ItemProperty -LiteralPath $registryPath -Name Icon -PropertyType ExpandString -Value "C:\Program Files\Microsoft VS Code\Code.exe"
+    New-Item -Path "$registryPath\command" -ItemType ExpandString -Value '"C:\Program Files\Microsoft VS Code\Code.exe" "%V"'
+}
+
 Write-Host "===> Install VS Code settings sync extension..."
 code --install-extension shan.code-settings-sync
 
