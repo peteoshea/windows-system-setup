@@ -81,13 +81,15 @@ Install-WinGetPackage -Name 1password
 Install-WinGetPackage -Name Git.Git -Exact
 Install-WinGetPackage -Name Microsoft.GitCredentialManagerforWindows -Exact
 Install-WinGetPackage -Name slack
-Install-WinGetPackage -Name sourcetree
+# Install-WinGetPackage -Name sourcetree # Doesn't see to work at the moment
 Install-WinGetPackage -Name terminal
 Install-WinGetPackage -Name vscode
 
+Install-ChocolateyPackage -Name soucetree
+
 Write-Host
 Write-Host "==> Configure programs..."
-Write-Host "===> Install VS Code extensions..."
+Write-Host "===> Install VS Code settings sync extension..."
 code --install-extension shan.code-settings-sync
 
 Write-Host
