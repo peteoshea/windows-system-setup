@@ -1,10 +1,16 @@
-# Elevate to Admininstrator as this script requires it
+# Check for Admininstrator permissions
 if (!([Security.Principal.WindowsPrincipal][Security.Principal.WindowsIdentity]::GetCurrent()).IsInRole([Security.Principal.WindowsBuiltInRole] "Administrator")) {
-    Start-Process powershell.exe "-NoProfile -ExecutionPolicy Bypass -File `"$PSCommandPath`"" -Verb RunAs
+    Write-Warning "This script must be run as Administrator"
     exit
 }
 
 Write-Host "==> Update settings..."
+
+Write-Host "===> Allow running of signed scripts"
+$currentPolicy = Get-ExecutionPolicy
+if ($currentPolicy -eq "Restricted") {
+    Set-ExecutionPolicy -ExecutionPolicy RemoteSigned
+}
 
 Write-Host "===> Enable developer mode"
 $registryItem = "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced"
@@ -37,24 +43,9 @@ if (Get-Command choco -ErrorAction SilentlyContinue) {
 if ($chocolateyInstalled -eq $false) {
     Write-Host "===> Installing Chocolatey..."
 
-    # Download and save installation script
-    $url = 'https://chocolatey.org/install.ps1'
-    $outPath = "$env:temp\installChocolatey.ps1"
-    Invoke-WebRequest -UseBasicParsing -Uri $url -OutFile $outPath
-
-    # Test signature
-    $result = Get-AuthenticodeSignature -FilePath $outPath
-    if ($result.Status -ne 'Valid')
-    {
-        Write-Warning "Installation Script Damaged/Malware?"
-        Exit 1
-    }
-
-    # Run the installation script
-    & "$outPath"
-
-    # Tidy up
-    Remove-Item -Path $outPath
+    Set-ExecutionPolicy Bypass -Scope Process -Force
+    [System.Net.ServicePointManager]::SecurityProtocol = [System.Net.ServicePointManager]::SecurityProtocol -bor 3072
+    Invoke-Expression ((New-Object System.Net.WebClient).DownloadString('https://chocolatey.org/install.ps1'))
 } else {
     Write-Host "===> Updating Chocolatey..."
     choco upgrade chocolatey
@@ -93,6 +84,11 @@ Install-WinGetPackage -Name slack
 Install-WinGetPackage -Name sourcetree
 Install-WinGetPackage -Name terminal
 Install-WinGetPackage -Name vscode
+
+Write-Host
+Write-Host "==> Configure programs..."
+Write-Host "===> Install VS Code extensions..."
+code --install-extension shan.code-settings-sync
 
 Write-Host
 Write-Host "==> Setup completed!"
