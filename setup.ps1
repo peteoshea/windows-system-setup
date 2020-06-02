@@ -95,16 +95,16 @@ Write-Host "==> Configure programs..."
 
 Write-Host "===> Add VS Code context menu options"
 Write-Host "- Add to file sub-menu"
-$vsCodePath = "%LOCALAPPDATA\Programs\Microsoft VS Code\Code.exe"
-$registryPath = "HKCU:\shell"
-if (!(Test-Path $registryPath)) {
+$vsCodePath = "%LOCALAPPDATA%\Programs\Microsoft VS Code\Code.exe"
+$registryPath = "HKCU:\SOFTWARE\Classes\*\shell"
+if (!(Test-Path -LiteralPath $registryPath)) {
     New-Item -Path $registryPath
 }
-$registryPath = "HKCU:\shell\VSCode"
-if (!(Test-Path $registryPath)) {
+$registryPath = "HKCU:\SOFTWARE\Classes\*\shell\VSCode"
+if (!(Test-Path -LiteralPath $registryPath)) {
     New-Item -Path $registryPath -ItemType ExpandString -Value "Open w&ith Code"
-    New-ItemProperty -Path $registryPath -Name Icon -PropertyType ExpandString -Value "$vsCodePath"
-    New-Item -Path "$registryPath\command" -ItemType ExpandString -Value '"$vsCodePath" "%1"'
+    New-ItemProperty -LiteralPath $registryPath -Name Icon -PropertyType ExpandString -Value "$vsCodePath"
+    New-Item -Path "$registryPath\command" -ItemType ExpandString -Value "`"$vsCodePath`" `"%1`""
 }
 Write-Host "- Add to folder sub-menu"
 $registryPath = "HKCU:\SOFTWARE\Classes\Directory\shell"
@@ -115,7 +115,7 @@ $registryPath = "HKCU:\SOFTWARE\Classes\Directory\shell\VSCode"
 if (!(Test-Path $registryPath)) {
     New-Item -Path $registryPath -ItemType ExpandString -Value "Open w&ith Code"
     New-ItemProperty -Path $registryPath -Name Icon -PropertyType ExpandString -Value "$vsCodePath"
-    New-Item -Path "$registryPath\command" -ItemType ExpandString -Value '"$vsCodePath" "%V"'
+    New-Item -Path "$registryPath\command" -ItemType ExpandString -Value "`"$vsCodePath`" `"%V`""
 }
 Write-Host "- Add to folder background sub-menu"
 $registryPath = "HKCU:\SOFTWARE\Classes\Directory\Background\shell"
@@ -126,7 +126,7 @@ $registryPath = "HKCU:\SOFTWARE\Classes\Directory\Background\shell\VSCode"
 if (!(Test-Path $registryPath)) {
     New-Item -Path $registryPath -ItemType ExpandString -Value "Open w&ith Code"
     New-ItemProperty -Path $registryPath -Name Icon -PropertyType ExpandString -Value "$vsCodePath"
-    New-Item -Path "$registryPath\command" -ItemType ExpandString -Value '"$vsCodePath" "%V"'
+    New-Item -Path "$registryPath\command" -ItemType ExpandString -Value "`"$vsCodePath`" `"%V`""
 }
 
 Write-Host "===> Install VS Code settings sync extension..."
