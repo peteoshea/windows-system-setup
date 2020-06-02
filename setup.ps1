@@ -94,27 +94,39 @@ Write-Host
 Write-Host "==> Configure programs..."
 
 Write-Host "===> Add VS Code context menu options"
-New-PSDrive -PSProvider registry -Root HKEY_CLASSES_ROOT -Name HKCR
 Write-Host "- Add to file sub-menu"
-$registryPath = "HKCR:\*\shell\VSCode"
-if (!(Test-Path -LiteralPath $registryPath)) {
+$vsCodePath = "%LOCALAPPDATA\Programs\Microsoft VS Code\Code.exe"
+$registryPath = "HKCU:\shell"
+if (!(Test-Path $registryPath)) {
+    New-Item -Path $registryPath
+}
+$registryPath = "HKCU:\shell\VSCode"
+if (!(Test-Path $registryPath)) {
     New-Item -Path $registryPath -ItemType ExpandString -Value "Open w&ith Code"
-    New-ItemProperty -LiteralPath $registryPath -Name Icon -PropertyType ExpandString -Value "C:\Program Files\Microsoft VS Code\Code.exe"
-    New-Item -Path "$registryPath\command" -ItemType ExpandString -Value '"C:\Program Files\Microsoft VS Code\Code.exe" "%1"'
+    New-ItemProperty -Path $registryPath -Name Icon -PropertyType ExpandString -Value "$vsCodePath"
+    New-Item -Path "$registryPath\command" -ItemType ExpandString -Value '"$vsCodePath" "%1"'
 }
 Write-Host "- Add to folder sub-menu"
-$registryPath = "HKCR:\Directory\shell\VSCode"
-if (!(Test-Path -LiteralPath $registryPath)) {
+$registryPath = "HKCU:\SOFTWARE\Classes\Directory\shell"
+if (!(Test-Path $registryPath)) {
+    New-Item -Path $registryPath
+}
+$registryPath = "HKCU:\SOFTWARE\Classes\Directory\shell\VSCode"
+if (!(Test-Path $registryPath)) {
     New-Item -Path $registryPath -ItemType ExpandString -Value "Open w&ith Code"
-    New-ItemProperty -LiteralPath $registryPath -Name Icon -PropertyType ExpandString -Value "C:\Program Files\Microsoft VS Code\Code.exe"
-    New-Item -Path "$registryPath\command" -ItemType ExpandString -Value '"C:\Program Files\Microsoft VS Code\Code.exe" "%V"'
+    New-ItemProperty -Path $registryPath -Name Icon -PropertyType ExpandString -Value "$vsCodePath"
+    New-Item -Path "$registryPath\command" -ItemType ExpandString -Value '"$vsCodePath" "%V"'
 }
 Write-Host "- Add to folder background sub-menu"
-$registryPath = "HKCR:\Directory\Background\shell\VSCode"
-if (!(Test-Path -LiteralPath $registryPath)) {
+$registryPath = "HKCU:\SOFTWARE\Classes\Directory\Background\shell"
+if (!(Test-Path $registryPath)) {
+    New-Item -Path $registryPath
+}
+$registryPath = "HKCU:\SOFTWARE\Classes\Directory\Background\shell\VSCode"
+if (!(Test-Path $registryPath)) {
     New-Item -Path $registryPath -ItemType ExpandString -Value "Open w&ith Code"
-    New-ItemProperty -LiteralPath $registryPath -Name Icon -PropertyType ExpandString -Value "C:\Program Files\Microsoft VS Code\Code.exe"
-    New-Item -Path "$registryPath\command" -ItemType ExpandString -Value '"C:\Program Files\Microsoft VS Code\Code.exe" "%V"'
+    New-ItemProperty -Path $registryPath -Name Icon -PropertyType ExpandString -Value "$vsCodePath"
+    New-Item -Path "$registryPath\command" -ItemType ExpandString -Value '"$vsCodePath" "%V"'
 }
 
 Write-Host "===> Install VS Code settings sync extension..."
