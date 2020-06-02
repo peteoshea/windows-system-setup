@@ -46,14 +46,15 @@ if ($chocolateyInstalled -eq $false) {
     Set-ExecutionPolicy Bypass -Scope Process -Force
     [System.Net.ServicePointManager]::SecurityProtocol = [System.Net.ServicePointManager]::SecurityProtocol -bor 3072
     Invoke-Expression ((New-Object System.Net.WebClient).DownloadString('https://chocolatey.org/install.ps1'))
-} else {
+}
+else {
     Write-Host "===> Updating Chocolatey..."
     choco upgrade chocolatey
 }
 
 function Install-ChocolateyPackage {
     param (
-        [Parameter(Mandatory=$true)]
+        [Parameter(Mandatory = $true)]
         [string]
         $Name
     )
@@ -62,17 +63,18 @@ function Install-ChocolateyPackage {
 }
 function Install-WinGetPackage {
     param (
-        [Parameter(Mandatory=$true)]
+        [Parameter(Mandatory = $true)]
         [string]
         $Name,
-        [Parameter(Mandatory=$false)]
+        [Parameter(Mandatory = $false)]
         [switch]
         $Exact
     )
     Write-Host "===> Installing '$Name' using winget"
     if ($Exact) {
         winget install $Name --exact
-    } else {
+    }
+    else {
         winget install $Name
     }
 }
