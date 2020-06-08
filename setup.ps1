@@ -134,6 +134,29 @@ if (!(Test-Path $registryPath)) {
 Write-Host "===> Install VS Code settings sync extension..."
 code --install-extension shan.code-settings-sync
 
+Write-Host "===> Configure git"
+git config --global core.autocrlf false
+
+$sshDirectory = "$env:USERPROFILE\.ssh"
+if (!(Test-Path $sshDirectory -PathType Container)) {
+    Write-Host "====> Create .ssh directory: $sshDirectory"
+    New-Item -Path $sshDirectory -ItemType Directory -ErrorAction Stop
+    Write-Host
+}
+$sshKey = "$sshDirectory\id_ed25519"
+if (!(Test-Path $sshKey -PathType Leaf)) {
+    Write-Host "====> No ED25519 SSH Key found so let's create one"
+    Write-Host "- It's more secure to create a passphrase but it's up to you"
+    ssh-keygen -t ed25519 -f $sshKey
+
+    Write-Host
+    Write-Host "- Don't forget to add your new machine specific SSH key to GitHub etc.:"
+    Write-Host
+    $sshPublicKey = "$sshKey.pub"
+    Get-Content -Path $sshPublicKey
+    Write-Host
+}
+
 Write-Host
 Write-Host "==> Setup completed!"
 $restartResponse = Read-Host -Prompt "Enter 'yes' if you wish to trigger a restart"
