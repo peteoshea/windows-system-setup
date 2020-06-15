@@ -32,6 +32,8 @@ Write-Host "- Expand to current folder"
 Set-ItemProperty -Path $registryItem -Name NavPaneExpandToCurrentFolder -Value 1
 Write-Host "- Show Recycle Bin"
 Set-ItemProperty -Path $registryItem -Name NavPaneShowAllFolders -Value 1
+Write-Host "- Disable SnapAssist"
+Set-ItemProperty -Path $registryItem -Name SnapAssist -Value 0
 
 Write-Host
 Write-Host "==> Install programs..."
