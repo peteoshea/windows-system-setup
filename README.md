@@ -8,7 +8,7 @@ Programs are installed via [winget](https://github.com/microsoft/winget-cli) whe
 The new Microsoft winget package manager is currently only available in the insider version of Windows 10.
 You may also need to manually install the [App Installer](https://www.microsoft.com/en-gb/p/app-installer/9nblggh4nns1) but hopefully that will come preinstalled going forward.
 
-To run this script directly on a new system simply runthe following from an administrator level PowerShell:
+To run this script directly on a new system simply run the following from an administrator level PowerShell:
 ```powershell
 iex ((New-Object System.Net.WebClient).DownloadString('https://raw.githubusercontent.com/peteoshea/windows-system-setup/master/setup.ps1'))
 ```

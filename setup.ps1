@@ -87,8 +87,8 @@ Install-WinGetPackage -Name Microsoft.GitCredentialManagerforWindows -Exact
 Install-WinGetPackage -Name Microsoft.MouseWithoutBorder -Exact
 Install-WinGetPackage -Name Microsoft.PowerShell
 Install-WinGetPackage -Name slack
-# Install-WinGetPackage -Name sourcetree # Doesn't see to work at the moment
-Install-WinGetPackage -Name terminal
+# Install-WinGetPackage -Name sourcetree # Doesn't seem to work at the moment
+Install-WinGetPackage -Name Microsoft.WindowsTerminal -Exact
 Install-WinGetPackage -Name vscode
 Install-WinGetPackage -Name winmerge
 
