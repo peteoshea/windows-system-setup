@@ -1,20 +1,25 @@
 # Check for Admininstrator permissions
 if (([Security.Principal.WindowsPrincipal][Security.Principal.WindowsIdentity]::GetCurrent()).IsInRole([Security.Principal.WindowsBuiltInRole] "Administrator")) {
-    Write-Host "Script is being run as Administrator"
+  Write-Host "Script is being run as Administrator"
 } else {
-    # Re-run the script using RunAs to elevate permissions
-    Write-Warning "Script needs Administrator permissions so spawning elevated version"
-    Start-Sleep 1
-    Start-Process powershell.exe "-NoProfile -ExecutionPolicy Bypass -File `"$PSCommandPath`"" -Verb RunAs
-    exit
+  # Re-run the script using RunAs to elevate permissions
+  Write-Warning "Script needs Administrator permissions so spawning elevated version"
+  Start-Sleep 1
+  Start-Process powershell.exe "-NoProfile -ExecutionPolicy Bypass -File `"$PSCommandPath`"" -Verb RunAs
+  exit
 }
+
+Write-Host "Running under PowerShell version:"
+$PSVersionTable.PSVersion
+Read-Host -Prompt "Hit enter:"
+exit
 
 Write-Host "==> Update settings..."
 
 Write-Host "===> Allow running of signed scripts"
 $currentPolicy = Get-ExecutionPolicy
 if ($currentPolicy -eq "Restricted") {
-    Set-ExecutionPolicy -ExecutionPolicy RemoteSigned
+  Set-ExecutionPolicy -ExecutionPolicy RemoteSigned
 }
 
 Write-Host "===> Enable developer mode"
@@ -50,45 +55,43 @@ Write-Host "==> Install programs..."
 
 $chocolateyInstalled = $false
 if (Get-Command choco -ErrorAction SilentlyContinue) {
-    $chocolateyInstalled = $true
+  $chocolateyInstalled = $true
 }
 if ($chocolateyInstalled -eq $false) {
-    Write-Host "===> Installing Chocolatey..."
+  Write-Host "===> Installing Chocolatey..."
 
-    Set-ExecutionPolicy Bypass -Scope Process -Force
-    [System.Net.ServicePointManager]::SecurityProtocol = [System.Net.ServicePointManager]::SecurityProtocol -bor 3072
-    Invoke-Expression ((New-Object System.Net.WebClient).DownloadString('https://chocolatey.org/install.ps1'))
-}
-else {
-    Write-Host "===> Updating Chocolatey..."
-    choco upgrade chocolatey
+  Set-ExecutionPolicy Bypass -Scope Process -Force
+  [System.Net.ServicePointManager]::SecurityProtocol = [System.Net.ServicePointManager]::SecurityProtocol -bor 3072
+  Invoke-Expression ((New-Object System.Net.WebClient).DownloadString('https://chocolatey.org/install.ps1'))
+} else {
+  Write-Host "===> Updating Chocolatey..."
+  choco upgrade chocolatey
 }
 
 function Install-ChocolateyPackage {
-    param (
-        [Parameter(Mandatory = $true)]
-        [string]
-        $Name
-    )
-    Write-Host "===> Installing '$Name' using Chocolatey"
-    choco upgrade $Name --confirm
+  param (
+    [Parameter(Mandatory = $true)]
+    [string]
+    $Name
+  )
+  Write-Host "===> Installing '$Name' using Chocolatey"
+  choco upgrade $Name --confirm
 }
 function Install-WinGetPackage {
-    param (
-        [Parameter(Mandatory = $true)]
-        [string]
-        $Name,
-        [Parameter(Mandatory = $false)]
-        [switch]
-        $Exact
-    )
-    Write-Host "===> Installing '$Name' using winget"
-    if ($Exact) {
-        winget install $Name --exact
-    }
-    else {
-        winget install $Name
-    }
+  param (
+    [Parameter(Mandatory = $true)]
+    [string]
+    $Name,
+    [Parameter(Mandatory = $false)]
+    [switch]
+    $Exact
+  )
+  Write-Host "===> Installing '$Name' using winget"
+  if ($Exact) {
+    winget install $Name --exact
+  } else {
+    winget install $Name
+  }
 }
 
 # Think about switching as many of these as possible to Chocolatey as that only installs packages
@@ -120,35 +123,35 @@ Write-Host "- Add to file sub-menu"
 $vsCodePath = "%LOCALAPPDATA%\Programs\Microsoft VS Code\Code.exe"
 $registryPath = "HKCU:\SOFTWARE\Classes\*\shell"
 if (!(Test-Path -LiteralPath $registryPath)) {
-    New-Item -Path $registryPath
+  New-Item -Path $registryPath
 }
 $registryPath = "HKCU:\SOFTWARE\Classes\*\shell\VSCode"
 if (!(Test-Path -LiteralPath $registryPath)) {
-    New-Item -Path $registryPath -ItemType ExpandString -Value "Open w&ith Code"
-    New-ItemProperty -LiteralPath $registryPath -Name Icon -PropertyType ExpandString -Value "$vsCodePath"
-    New-Item -Path "$registryPath\command" -ItemType ExpandString -Value "`"$vsCodePath`" `"%1`""
+  New-Item -Path $registryPath -ItemType ExpandString -Value "Open w&ith Code"
+  New-ItemProperty -LiteralPath $registryPath -Name Icon -PropertyType ExpandString -Value "$vsCodePath"
+  New-Item -Path "$registryPath\command" -ItemType ExpandString -Value "`"$vsCodePath`" `"%1`""
 }
 Write-Host "- Add to folder sub-menu"
 $registryPath = "HKCU:\SOFTWARE\Classes\Directory\shell"
 if (!(Test-Path $registryPath)) {
-    New-Item -Path $registryPath
+  New-Item -Path $registryPath
 }
 $registryPath = "HKCU:\SOFTWARE\Classes\Directory\shell\VSCode"
 if (!(Test-Path $registryPath)) {
-    New-Item -Path $registryPath -ItemType ExpandString -Value "Open w&ith Code"
-    New-ItemProperty -Path $registryPath -Name Icon -PropertyType ExpandString -Value "$vsCodePath"
-    New-Item -Path "$registryPath\command" -ItemType ExpandString -Value "`"$vsCodePath`" `"%V`""
+  New-Item -Path $registryPath -ItemType ExpandString -Value "Open w&ith Code"
+  New-ItemProperty -Path $registryPath -Name Icon -PropertyType ExpandString -Value "$vsCodePath"
+  New-Item -Path "$registryPath\command" -ItemType ExpandString -Value "`"$vsCodePath`" `"%V`""
 }
 Write-Host "- Add to folder background sub-menu"
 $registryPath = "HKCU:\SOFTWARE\Classes\Directory\Background\shell"
 if (!(Test-Path $registryPath)) {
-    New-Item -Path $registryPath
+  New-Item -Path $registryPath
 }
 $registryPath = "HKCU:\SOFTWARE\Classes\Directory\Background\shell\VSCode"
 if (!(Test-Path $registryPath)) {
-    New-Item -Path $registryPath -ItemType ExpandString -Value "Open w&ith Code"
-    New-ItemProperty -Path $registryPath -Name Icon -PropertyType ExpandString -Value "$vsCodePath"
-    New-Item -Path "$registryPath\command" -ItemType ExpandString -Value "`"$vsCodePath`" `"%V`""
+  New-Item -Path $registryPath -ItemType ExpandString -Value "Open w&ith Code"
+  New-ItemProperty -Path $registryPath -Name Icon -PropertyType ExpandString -Value "$vsCodePath"
+  New-Item -Path "$registryPath\command" -ItemType ExpandString -Value "`"$vsCodePath`" `"%V`""
 }
 
 # No longer required as VS Code has settings sync built in nowadays.
@@ -162,28 +165,28 @@ git config --global core.autocrlf false
 
 $sshDirectory = "$env:USERPROFILE\.ssh"
 if (!(Test-Path $sshDirectory -PathType Container)) {
-    Write-Host "====> Create .ssh directory: $sshDirectory"
-    New-Item -Path $sshDirectory -ItemType Directory -ErrorAction Stop
-    Write-Host
+  Write-Host "====> Create .ssh directory: $sshDirectory"
+  New-Item -Path $sshDirectory -ItemType Directory -ErrorAction Stop
+  Write-Host
 }
 $sshKey = "$sshDirectory\id_ed25519"
 if (!(Test-Path $sshKey -PathType Leaf)) {
-    Write-Host "====> No ED25519 SSH Key found so let's create one"
-    Write-Host "- It's more secure to create a passphrase but it's up to you"
-    ssh-keygen -t ed25519 -f $sshKey
+  Write-Host "====> No ED25519 SSH Key found so let's create one"
+  Write-Host "- It's more secure to create a passphrase but it's up to you"
+  ssh-keygen -t ed25519 -f $sshKey
 
-    Write-Host
-    Write-Host "- Don't forget to add your new machine specific SSH key to GitHub etc.:"
-    Write-Host
-    $sshPublicKey = "$sshKey.pub"
-    Get-Content -Path $sshPublicKey
-    Write-Host
+  Write-Host
+  Write-Host "- Don't forget to add your new machine specific SSH key to GitHub etc.:"
+  Write-Host
+  $sshPublicKey = "$sshKey.pub"
+  Get-Content -Path $sshPublicKey
+  Write-Host
 }
 
 Write-Host
 Write-Host "==> Setup completed!"
 $restartResponse = Read-Host -Prompt "Enter 'yes' if you wish to trigger a restart"
 if ($restartResponse -eq "yes") {
-    Write-Host "Okay, restarting system"
-    Restart-Computer
+  Write-Host "Okay, restarting system"
+  Restart-Computer
 }
