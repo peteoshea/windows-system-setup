@@ -102,18 +102,31 @@ function Install-WinGetPackage {
 #  - VS Code
 #  - Sourcetree
 
-Install-WinGetPackage -Name 1password
-Install-WinGetPackage -Name Git.Git -Exact
-Install-WinGetPackage -Name Microsoft.GitCredentialManagerforWindows -Exact
-Install-WinGetPackage -Name Microsoft.MouseWithoutBorder -Exact
-Install-WinGetPackage -Name Microsoft.PowerShell
-Install-WinGetPackage -Name slack
-# Install-WinGetPackage -Name sourcetree # Doesn't seem to work at the moment
-Install-WinGetPackage -Name Microsoft.WindowsTerminal -Exact
-Install-WinGetPackage -Name vscode
-Install-WinGetPackage -Name winmerge
+# Install-WinGetPackage -Name 1password
+# Install-WinGetPackage -Name Git.Git -Exact
+# Install-WinGetPackage -Name Microsoft.GitCredentialManagerforWindows -Exact
+# Install-WinGetPackage -Name Microsoft.MouseWithoutBorder -Exact
+# Install-WinGetPackage -Name Microsoft.PowerShell
+# Install-WinGetPackage -Name slack
+# Install-WinGetPackage -Name sourcetree # Doesn't seem to work properly from winget anyway
+# Install-WinGetPackage -Name Microsoft.WindowsTerminal -Exact
+# Install-WinGetPackage -Name vscode
+# Install-WinGetPackage -Name winmerge
 
+Install-ChocolateyPackage -Name 1password
+Install-ChocolateyPackage -Name mousewithoutborders
+Install-ChocolateyPackage -Name powershell-core
+Install-ChocolateyPackage -Name microsoft-windows-terminal
+Install-ChocolateyPackage -Name git
+Install-ChocolateyPackage -Name Git-Credential-Manager-for-Windows
+Install-ChocolateyPackage -Name kdiff3
+Install-ChocolateyPackage -Name winmerge
+Install-ChocolateyPackage -Name vscode
 Install-ChocolateyPackage -Name soucetree
+Install-ChocolateyPackage -Name slack
+Install-ChocolateyPackage -Name microsoft-teams
+Install-ChocolateyPackage -Name HeidiSQL
+Install-ChocolateyPackage -Name postman
 
 Write-Host
 Write-Host "==> Configure programs..."
