@@ -81,6 +81,14 @@ function Install-WinGetPackage {
     }
 }
 
+# Think about switching as many of these as possible to Chocolatey as that only installs packages
+# that aren't already installed, allowing re-running of the script.
+#
+# Would also like to pin some of these icons to the taksbar...
+#  - Terminal
+#  - VS Code
+#  - Sourcetree
+
 Install-WinGetPackage -Name 1password
 Install-WinGetPackage -Name Git.Git -Exact
 Install-WinGetPackage -Name Microsoft.GitCredentialManagerforWindows -Exact
@@ -133,8 +141,11 @@ if (!(Test-Path $registryPath)) {
     New-Item -Path "$registryPath\command" -ItemType ExpandString -Value "`"$vsCodePath`" `"%V`""
 }
 
-Write-Host "===> Install VS Code settings sync extension..."
-code --install-extension shan.code-settings-sync
+# No longer required as VS Code has settings sync built in nowadays.
+# Left the command here in case it is useful in the future...
+#
+# Write-Host "===> Install VS Code settings sync extension..."
+# code --install-extension shan.code-settings-sync
 
 Write-Host "===> Configure git"
 git config --global core.autocrlf false
