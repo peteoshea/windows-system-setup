@@ -206,6 +206,16 @@ if (!(Test-Path $sshKey -PathType Leaf)) {
   Write-Host
 }
 
+$wslInstalled = $false
+if (Get-Command wsl -ErrorAction SilentlyContinue) {
+  $wslInstalled = $true
+}
+if ($wslInstalled -eq $false) {
+  Write-Host
+  Write-Host "==> Installing WSL..."
+  Enable-WindowsOptionalFeature -Online -FeatureName Microsoft-Windows-Subsystem-Linux
+}
+
 Write-Host
 Write-Host "==> Setup completed!"
 $restartResponse = Read-Host -Prompt "Enter 'yes' if you wish to trigger a restart"
