@@ -89,6 +89,38 @@ Set-ItemProperty -Path $registryItem -Name SnapAssist -Value 0
 Write-Host
 Write-Host "==> Install programs..."
 
+$wslRequiresRestart = $false
+if ((Get-WindowsOptionalFeature -Online -FeatureName Microsoft-Windows-Subsystem-Linux).State -ne "Enabled") {
+  Write-Host "===> Enable WSL..."
+  Write-Host "- A restart may be required to install WSL."
+  Write-Host "- If so you should then re-run this script to continue with setup."
+  $enableWsl = Enable-WindowsOptionalFeature -Online -Norestart -FeatureName Microsoft-Windows-Subsystem-Linux
+  if ($enableWsl.RestartNeeded -eq $true) {
+    $wslRequiresRestart = $true
+  }
+} else {
+  Write-Host "- WSL is enabled"
+}
+if ((Get-WindowsOptionalFeature -Online -FeatureName VirtualMachinePlatform).State -ne "Enabled") {
+  Write-Host "===> Enable VirtualMachinePlatform..."
+  Write-Host "- A restart may be required to install this feature."
+  Write-Host "- If so you should then re-run this script to continue with setup."
+  $enableVM = Enable-WindowsOptionalFeature -Online -NoRestart -FeatureName VirtualMachinePlatform
+  if ($enableVM.RestartNeeded -eq $true) {
+    $wslRequiresRestart = $true
+  }
+} else {
+  Write-Host "- VirtualMachinePlatform is enabled"
+}
+
+if ($wslRequiresRestart -eq $true) {
+  Write-Host
+  Write-Host "Restart required to finish installing WSL."
+  Write-Host
+  $restartResponse = Read-Host -Prompt "Press <ENTER> when ready"
+  Restart-Computer
+}
+
 $chocolateyInstalled = $false
 if (Get-Command choco -ErrorAction SilentlyContinue) {
   $chocolateyInstalled = $true
@@ -204,16 +236,6 @@ if (!(Test-Path $sshKey -PathType Leaf)) {
   $sshPublicKey = "$sshKey.pub"
   Get-Content -Path $sshPublicKey
   Write-Host
-}
-
-$wslInstalled = $false
-if (Get-Command wsl -ErrorAction SilentlyContinue) {
-  $wslInstalled = $true
-}
-if ($wslInstalled -eq $false) {
-  Write-Host
-  Write-Host "==> Installing WSL..."
-  Enable-WindowsOptionalFeature -Online -FeatureName Microsoft-Windows-Subsystem-Linux
 }
 
 Write-Host
