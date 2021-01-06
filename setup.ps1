@@ -1,3 +1,39 @@
+function Install-ChocolateyPackage {
+  param (
+    [Parameter(Mandatory = $true)]
+    [string]
+    $Name
+  )
+  Write-Host "===> Installing '$Name' using Chocolatey"
+  choco upgrade $Name --confirm
+}
+function Install-WinGetPackage {
+  param (
+    [Parameter(Mandatory = $true)]
+    [string]
+    $Name,
+    [Parameter(Mandatory = $false)]
+    [switch]
+    $Exact
+  )
+  Write-Host "===> Installing '$Name' using winget"
+  if ($Exact) {
+    winget install $Name --exact
+  } else {
+    winget install $Name
+  }
+}
+
+function Assert-Latest-PowerShell-Installed {
+  $psCoreInstalled = $false
+  if (Get-Command pwsh -ErrorAction SilentlyContinue) {
+    $psCoreInstalled = $true
+  }
+  if ($psCoreInstalled -eq $false) {
+    Install-WinGetPackage -Name Microsoft.PowerShell
+  }
+}
+
 # Check for Admininstrator permissions
 if (([Security.Principal.WindowsPrincipal][Security.Principal.WindowsIdentity]::GetCurrent()).IsInRole([Security.Principal.WindowsBuiltInRole] "Administrator")) {
   Write-Host "Script is being run as Administrator"
@@ -5,15 +41,15 @@ if (([Security.Principal.WindowsPrincipal][Security.Principal.WindowsIdentity]::
   # Re-run the script using RunAs to elevate permissions
   Write-Warning "Script needs Administrator permissions so spawning elevated version"
   Start-Sleep 1
-  Start-Process powershell.exe "-NoProfile -ExecutionPolicy Bypass -File `"$PSCommandPath`"" -Verb RunAs
+  Assert-Latest-PowerShell-Installed
+  Start-Process pwsh "-NoProfile -ExecutionPolicy Bypass -File `"$PSCommandPath`"" -Verb RunAs
   exit
 }
 
 Write-Host "Running under PowerShell version:"
 $PSVersionTable.PSVersion
-Read-Host -Prompt "Hit enter:"
-exit
 
+Write-Host
 Write-Host "==> Update settings..."
 
 Write-Host "===> Allow running of signed scripts"
@@ -66,32 +102,6 @@ if ($chocolateyInstalled -eq $false) {
 } else {
   Write-Host "===> Updating Chocolatey..."
   choco upgrade chocolatey
-}
-
-function Install-ChocolateyPackage {
-  param (
-    [Parameter(Mandatory = $true)]
-    [string]
-    $Name
-  )
-  Write-Host "===> Installing '$Name' using Chocolatey"
-  choco upgrade $Name --confirm
-}
-function Install-WinGetPackage {
-  param (
-    [Parameter(Mandatory = $true)]
-    [string]
-    $Name,
-    [Parameter(Mandatory = $false)]
-    [switch]
-    $Exact
-  )
-  Write-Host "===> Installing '$Name' using winget"
-  if ($Exact) {
-    winget install $Name --exact
-  } else {
-    winget install $Name
-  }
 }
 
 # Think about switching as many of these as possible to Chocolatey as that only installs packages
