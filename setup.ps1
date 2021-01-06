@@ -104,8 +104,8 @@ if ($chocolateyInstalled -eq $false) {
   choco upgrade chocolatey
 }
 
-# Think about switching as many of these as possible to Chocolatey as that only installs packages
-# that aren't already installed, allowing re-running of the script.
+# Switched to Chocolatey as that only installs packages that aren't already installed, allowing
+# re-running of the script.
 #
 # Would also like to pin some of these icons to the taksbar...
 #  - Terminal
@@ -132,7 +132,7 @@ Install-ChocolateyPackage -Name Git-Credential-Manager-for-Windows
 Install-ChocolateyPackage -Name kdiff3
 Install-ChocolateyPackage -Name winmerge
 Install-ChocolateyPackage -Name vscode
-Install-ChocolateyPackage -Name soucetree
+Install-ChocolateyPackage -Name sourcetree
 Install-ChocolateyPackage -Name slack
 Install-ChocolateyPackage -Name microsoft-teams
 Install-ChocolateyPackage -Name HeidiSQL
