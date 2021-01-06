@@ -24,12 +24,12 @@ function Install-WinGetPackage {
   }
 }
 
-function Assert-Latest-PowerShell-Installed {
-  $psCoreInstalled = $false
+function Assert-PowerShell-Installed {
+  $powerShellInstalled = $false
   if (Get-Command pwsh -ErrorAction SilentlyContinue) {
-    $psCoreInstalled = $true
+    $powerShellInstalled = $true
   }
-  if ($psCoreInstalled -eq $false) {
+  if ($powerShellInstalled -eq $false) {
     Install-WinGetPackage -Name Microsoft.PowerShell
   }
 }
@@ -41,7 +41,7 @@ if (([Security.Principal.WindowsPrincipal][Security.Principal.WindowsIdentity]::
   # Re-run the script using RunAs to elevate permissions
   Write-Warning "Script needs Administrator permissions so spawning elevated version"
   Start-Sleep 1
-  Assert-Latest-PowerShell-Installed
+  Assert-PowerShell-Installed
   Start-Process pwsh "-NoProfile -ExecutionPolicy Bypass -File `"$PSCommandPath`"" -Verb RunAs
   exit
 }
