@@ -121,6 +121,29 @@ if ($wslRequiresRestart -eq $true) {
   Restart-Computer
 }
 
+Write-Host "- Set WSL2 as default"
+$enableWsl2 = @(wsl --set-default-version 2)
+if ($enableWsl2[0].StartsWith("WSL 2 requires an update to its kernel component.")) {
+  Write-Error "WSL2 requires kernel update"
+  Write-Host "===> Updating kernel..."
+  Write-Host "- Downloading kernel update..."
+  $updateFileName = "wsl_update_x64.msi"
+  $updateUrl = "https://wslstorestorage.blob.core.windows.net/wslblob/" + $updateFileName
+  $updateFilePath = $PSScriptRoot + "\" + $updateFileName
+  $webClient = New-Object System.Net.WebClient
+  $webClient.DownloadFile($updateUrl, $updateFilePath)
+  Write-Host "- Download completed"
+  Write-Host "- Install kernel update..."
+  $msiArguments = '/i "' + $updateFilePath + '" /passive'
+  Start-Process msiexec -ArgumentList $msiArguments -Wait -NoNewWindow
+  Write-Host "- Delete downloaded update file"
+  Remove-Item -Path $updateFilePath
+
+  # Try it again now kernel update has been installed
+  Write-Host "- Set WSL2 as default again"
+  wsl --set-default-version 2
+}
+
 $chocolateyInstalled = $false
 if (Get-Command choco -ErrorAction SilentlyContinue) {
   $chocolateyInstalled = $true
