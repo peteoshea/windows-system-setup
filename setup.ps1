@@ -68,7 +68,7 @@ PowerCfg /Change monitor-timeout-ac 15
 Write-Host "- Never sleep when plugged in"
 PowerCfg /Change standby-timeout-ac 0
 
-Write-Host "===> Enable remote desktop:"
+Write-Host "===> Enable remote desktop"
 Set-ItemProperty "HKLM:\SYSTEM\CurrentControlSet\Control\Terminal Server\" -Name "fDenyTSConnections" -Value 0
 Set-ItemProperty "HKLM:\SYSTEM\CurrentControlSet\Control\Terminal Server\WinStations\RDP-Tcp\" -Name "UserAuthentication" -Value 1
 Enable-NetFirewallRule -DisplayGroup "Remote Desktop"
@@ -142,6 +142,11 @@ if ($enableWsl2[0].StartsWith("WSL 2 requires an update to its kernel component.
   # Try it again now kernel update has been installed
   Write-Host "- Set WSL2 as default again"
   wsl --set-default-version 2
+}
+
+$wslDistributions = @(wsl -l)
+if ($wslDistributions[0] -eq "Windows Subsystem for Linux has no installed distributions.") {
+  Install-WinGetPackage -Name Canonical.Ubuntu
 }
 
 $chocolateyInstalled = $false
